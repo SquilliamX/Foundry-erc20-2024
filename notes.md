@@ -2930,8 +2930,37 @@ ERC-20s are the industry standard of Tokens. ERC-20s represent tokens, but they 
 
 In order to create an ERC-20, it needs to have all the functions that the ERC20 token standard has. You can read more about this @https://eips.ethereum.org/EIPS/eip-20
 
+OpenZeppelin has ERC contracts that are ready to deploy and have been audited. You can find more about these in their docs. `https://docs.openzeppelin.com/contracts/5.x/tokens`.
+
+OpenZeppelin also has a `wizard` that allows you to build a pre-selection of different tokens depending on what you want them to do: `https://docs.openzeppelin.com/contracts/5.x/wizard`
 
 
+To use OpenZepplin Contracts in your codebase do the following:
+ 1. run `forge install OpenZepplin/openzepplin-contracts --no-commit`. 
+ 
+ 2. then create remapping in your `foundry.toml` of `remappings = ['@openzeppelin=lib/openzeppelin-contracts']` .
+
+ 3. Then import the ERC you want to use and inherit the imported file.
+
+ 4. Implement the constructor used in the inherited file.
+
+ example from foundry-erc20-f23:
+ ```js
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract OurToken is ERC20 {
+    // since the ERC20 contract we inherited from has a constructor, we must implement the constructor.
+    constructor(uint256 initalSupply) ERC20("OurToken", "OT") {
+        // mint the msg.sender of this contract the entire initial Supply
+        _mint(msg.sender, initalSupply);
+    }
+}
+
+ ```
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
