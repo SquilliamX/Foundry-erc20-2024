@@ -1376,7 +1376,7 @@ contract DeployRaffle is Script {
 
 ```
 
-`vm.startBroadcast` & `vm.stopBroadcast`: All logic inbetween these two cheatcodes will be broadcasted/executed directly onto the blockchain.
+`vm.startBroadcast` & `vm.stopBroadcast`: All logic inbetween these two cheatcodes will be broadcasted/executed directly onto the blockchain. Broadcast is just a tool that allows msg.sender to become the owner of the contract. So you would be the owner, not the deployment script. And when using deployment scripts that use `broadcast` in tests, the test contract would become the msg.sender. 
 example: (from `foundry-smart-contract-lottery/script/DeployRaffle.s.sol`)
 ```js
 contract DeployRaffle is Script {
@@ -2961,6 +2961,36 @@ contract OurToken is ERC20 {
 }
 
  ```
+
+ ERC20s have many different functions. Two functions in ERC20s are the `transferFrom` and `transfer` functions.
+
+ The `transferFrom` function will allow another user or contract to transfer tokens from an address(if the address approves them to do so), to another address, with an amount to spend.
+
+ The `approve` function will make the msg.sender the _from address and it will approve parameters of an `_address` and an `_amount`
+example:
+```js
+  function testAllowancesWorks() public {
+        uint256 initialAllowance = 1000;
+
+        // Bob approves Alice to spend tokens on his behalf
+        vm.prank(bob);
+        ourToken.approve(alice, initialAllowance);
+
+        uint256 transferAmount = 500;
+
+        // alice transfers bobs tokens from bobs account, to alice, of an amount of 500.
+        vm.prank(alice);
+        ourToken.transferFrom(bob, alice, transferAmount);
+    }
+```
+
+The `transfer` function will make the `msg.sender`(the caller of the transfer function) to be the `_from` address, and the only parameters it will take are a `_to` address and an `_amount`:
+example:
+```js
+    // msg.sender is the from address.
+    ourToken.transfer(alice, transferAmount);
+
+```
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
